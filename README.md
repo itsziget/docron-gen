@@ -13,4 +13,4 @@ Set labels for containers you want to start periodically.
 
 Imagine you want to send an email to yourself every time the container is started by the cron. 
 
-You can see an example in [docker-compose.test.yml](https://github.com/itsziget/docron-gen/blob/master/docker-compose.test.yml)
+You can see an example in [docker-compose.example.yml](https://github.com/itsziget/docron-gen/blob/master/docker-compose.example.yml)
