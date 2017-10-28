@@ -1,0 +1,43 @@
+version: "2.1"
+
+volumes:
+  crontabs:
+
+services:
+  cron:
+    image: itsziget/docron
+    environment:
+      TIMEZONE: Europe/Budapest
+    volumes:
+      - crontabs:/etc/crontabs
+      - /var/run/docker.sock:/var/run/docker.sock
+  gen:
+    image: docron-gen
+    environment:
+      DOCRON_LABEL_PREFIX: itsziget.docron-gen
+      NOTIFY_PROCESS: crond
+    depends_on:
+      - cron
+    pid: service:cron
+    volumes:
+      - crontabs:/etc/crontabs
+      - /var/run/docker.sock:/tmp/docker.sock
+  test:
+    image: bash
+    labels:
+      itsziget.docron-gen.start.schedule: "0 20 * * *"
+      itsziget.docron-gen.start.pipeline: |
+        docker run -i \
+          -e SMTP_HOST="<smtp-host>" \
+          -e SMTP_USER="<smtp-user>" \
+          -e SMTP_PASS="<smtp-pass>" \
+          -e TO="<recipients>" \
+          -e FROM_EMAIL="<sender-email-address>" \
+          -e FROM_NAME="<sender-name>" \
+          -e SUBJECT="<subject>" \
+          -e STARTTLS=NO \
+          --rm itsziget/ssmtp-mailer
+    volumes:
+      - .:/app
+    command:
+      - date

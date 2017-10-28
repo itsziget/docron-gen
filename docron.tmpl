@@ -1,0 +1,6 @@
+{{$labelPrefix := $.Env.DOCRON_LABEL_PREFIX}}
+{{$startScheduleLabel := (printf "%s.start.schedule" $labelPrefix)}}
+{{ range $container := whereLabelExists $ $startScheduleLabel }}
+{{ $pipeline := (index $container.Labels (printf "%s.start.pipeline" $labelPrefix) )}}
+{{index $container.Labels $startScheduleLabel}}    docker start {{$container.Name}} {{if (ne $pipeline "") }}-a |{{replace $pipeline "\\\n" " " -1}}{{end}}
+{{ end }}
