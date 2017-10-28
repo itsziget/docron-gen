@@ -1,4 +1,4 @@
-# Crontab file genrator
+# Crontab file generator
 
 This docker image helps you automatically generate crontab file for alpine based cron containers.
 
