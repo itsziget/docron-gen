@@ -4,3 +4,13 @@
 {{ $pipeline := (index $container.Labels (printf "%s.start.pipeline" $labelPrefix) )}}
 {{index $container.Labels $startScheduleLabel}}    docker start {{$container.Name}} {{if (ne $pipeline "") }}-a |{{replace $pipeline "\\\n" " " -1}}{{end}}
 {{ end }}
+{{$execScheduleLabel := (printf "%s.exec.schedule" $labelPrefix)}}
+{{ range $container := whereLabelExists $ $execScheduleLabel }}
+{{ $pipeline := (index $container.Labels (printf "%s.exec.pipeline" $labelPrefix) )}}
+{{ $command := (index $container.Labels (printf "%s.exec.command" $labelPrefix) )}}
+{{ $command := (replace $command "\\\n" " " -1) }}
+{{ $command := (replace $command "\n"  " " -1) }}
+{{ $command := (replace $command "'" " " -1) }}
+{{ $command := trim $command }}
+{{index $container.Labels $execScheduleLabel}}    if [ ! -z $(docker ps -q -f name={{$container.Name}}$) ]; then docker exec {{$container.Name}} '{{ $command }}' {{if (ne $pipeline "") }} |{{replace $pipeline "\\\n" " " -1}}{{end}}; fi;
+{{ end }}
