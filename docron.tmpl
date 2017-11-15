@@ -1,4 +1,10 @@
 {{$labelPrefix := $.Env.DOCRON_LABEL_PREFIX}}
+{{$notifyMeLabel := (printf "%s.notifyme" $labelPrefix)}}
+{{ range $container := whereLabelExists $ $notifyMeLabel }}
+{{ if $container.State.Running }}
+# NOTIFY_CONTAINER={{ $container.Name }}
+{{ end }}
+{{ end }}
 {{$startScheduleLabel := (printf "%s.start.schedule" $labelPrefix)}}
 {{ range $container := whereLabelExists $ $startScheduleLabel }}
 {{ $pipeline := (index $container.Labels (printf "%s.start.pipeline" $labelPrefix) )}}
